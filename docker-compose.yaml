@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16.2
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: andrew
+      POSTGRES_PASSWORD: andrew1
+      POSTGRES_DB: filmora
+      POSTGRES_URL: postgresql://andrew:andrew1@localhost:5432/filmora?sslmode=disable
+      PGDATA : /data
+    volumes:
+      - ./volumes/pg/data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U andrew -d filmora"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+  migrate:
+    depends_on:
+      db:
+        condition: service_healthy
+    image: migrate/migrate
+    volumes:
+      - ./migrate:/migrations
+    command:
+      [
+        "-path",
+        "./migrations",
+        "-database",
+        "postgresql://andrew:andrew1@db:5432/filmora?sslmode=disable",
+        "up",
+      ]
