@@ -1,1 +1,1 @@
-# vk_films
+запуск проекта с помощью скрипта, который находится в src/scripts/start_docker.sh
